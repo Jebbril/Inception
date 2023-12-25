@@ -1,0 +1,9 @@
+FROM debian:bullseye
+
+RUN apt update -y && apt upgrade -y && apt install nginx -y && apt install openssl -y
+
+EXPOSE 443
+
+COPY ./tools/script.sh /
+
+ENTRYPOINT ["/script.sh"]

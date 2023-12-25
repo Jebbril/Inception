@@ -1,0 +1,60 @@
+volumes:
+  WordPress:
+    name: WordPress
+    driver: local
+    driver_opts:
+      device: /home/orakib/data/WordPress
+      o: bind
+      type: none
+  DB:
+    name: DB
+    driver: local
+    driver_opts:
+      device: /home/orakib/data/DB
+      o: bind
+      type: none
+
+networks:
+  inception:
+    name: inception
+
+services:
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx/.
+    image: nginx
+    ports:
+      - "443:443"
+    restart: always
+    depends_on:
+      - wordpress
+    env_file:
+      - .env
+    volumes:
+      - WordPress:/var/www/html
+    networks:
+      - inception
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress/.
+    image: wordpress
+    restart: always
+    depends_on:
+      - mariadb
+    env_file:
+      - .env
+    volumes:
+      - WordPress:/var/www/html
+    networks:
+      - inception
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb/.
+    image: mariadb
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - DB:/var/lib/mysql
+    networks:
+      - inception
